@@ -112,3 +112,7 @@ print(linear_regression.intercept_[0])
 print(linear_regression.coef_[0][0])
 
 # %%
+data.corr()
+
+# %%
+# mask = np.zeros_like(data.corr())
