@@ -91,8 +91,10 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 linearRegression = LinearRegression()
 linearRegression.fit(X_train, y_train)
-print(linearRegression.coef_)
-print(linearRegression.intercept_)
-
+print("Intercept is: " + str(linearRegression.intercept_))
 pd.DataFrame(data=linearRegression.coef_, index=X_train.columns)
+
+print(linearRegression.score(X_train, y_train))
+print(linearRegression.score(X_test, y_test))
+
 # %%
