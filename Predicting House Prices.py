@@ -7,7 +7,8 @@ import numpy as np
 from matplotlib import cm
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-
+import statsmodels.api as sm
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 # %%
 
 # Load boston houses dataset
@@ -92,9 +93,62 @@ X_train, X_test, y_train, y_test = train_test_split(
 linearRegression = LinearRegression()
 linearRegression.fit(X_train, y_train)
 print("Intercept is: " + str(linearRegression.intercept_))
-pd.DataFrame(data=linearRegression.coef_, index=X_train.columns)
+print(pd.DataFrame(data=linearRegression.coef_, index=X_train.columns))
 
 print(linearRegression.score(X_train, y_train))
 print(linearRegression.score(X_test, y_test))
 
+# %%
+data['PRICE'].skew()
+
+y_log = np.log(data['PRICE'])
+
+size_of_prices = np.arange(0, data['PRICE'].size)
+
+# plt.scatter(size_of_prices, np_arr_prices)
+
+# plt.scatter(size_of_prices, y_log, color="red")
+
+sns.distplot(y_log)
+plt.show()
+
+# %%
+
+# Rerunning regression using transformed data
+
+X_train_2, X_test_2, y_train_2, y_test_2 = train_test_split(
+    features, y_log, test_size=0.2, random_state=10)
+
+linearRegression_2 = LinearRegression()
+linearRegression_2.fit(X_train_2, y_train_2)
+
+print(linearRegression_2.score(X_train_2, y_train_2))
+print(linearRegression_2.score(X_test_2, y_test_2))
+
+
+print(np.pi)
+# %%
+x_incl_constant = sm.add_constant(X_train)
+
+sm_model = sm.OLS(y_train_2, x_incl_constant)
+
+results = sm_model.fit()
+
+results.pvalues
+
+print("mean is ", results.mse_resid)
+
+pd.DataFrame({'coef': results.params, 'p-values': round(results.pvalues, 3)})
+# %%
+
+vif = []
+for i in range(len(x_incl_constant.columns)):
+    vif.append(variance_inflation_factor(x_incl_constant.values, i))
+
+
+pd.DataFrame({"col": x_incl_constant.columns, "Vif": np.around(vif, 2)})
+# variance_inflation_factor(x_incl_constant.values, 1)
+# variance_inflation_factor(np.array(x_incl_constant), 2)
+
+# print(len(x_incl_constant.columns)
 # %%
