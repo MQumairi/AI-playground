@@ -32,10 +32,17 @@ theta1 = 0
 m = len(y)
 a = 0.01
 
-for i in range(10):
-    gradient = (lin_reg(x, theta0, theta1) - y).transpose().dot(x) / len(x)
-    theta0 -= a * gradient
-    theta1 -= a * gradient
+for i in range(100):
+    # gradient = (lin_reg(x, theta0, theta1) - y).transpose().dot(x) / len(x)
+    # theta0 -= a * gradient
+    # theta1 -= a * gradient
+
+    theta0 -= a * sum(lin_reg(x, theta0, theta1) - y) / m
+
+    for j in range(len(x)):
+        theta1 -= a * (sum(lin_reg(x, theta0, theta1) - y) * x[j]) / m
+
+    # print(f"{theta0}, {theta1}")
 
 plt.plot(x, lin_reg(x, theta0, theta1))
 # %%
